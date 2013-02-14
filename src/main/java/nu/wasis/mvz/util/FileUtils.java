@@ -8,7 +8,7 @@ import nu.wasis.mvz.exception.FileToSmallException;
 
 public final class FileUtils {
 
-	public static final int DEFAULT_READ_LENGTH = SizeConstants.KB_256;
+	public static final int DEFAULT_READ_LENGTH = SizeConstants.KB_128;
 
 	private FileUtils() {
 		// static only

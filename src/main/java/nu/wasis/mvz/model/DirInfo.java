@@ -1,16 +1,20 @@
 package nu.wasis.mvz.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 public class DirInfo {
+	
+	private static final Logger LOG = Logger.getLogger(DirInfo.class);
 
-	final File directory;
-	final Set<FileInfo> fileInfos = new HashSet<FileInfo>();
+	private final File directory;
+	private final Set<FileInfo> fileInfos = new HashSet<FileInfo>();
 	
 	public DirInfo(final File directory) {
 		this.directory = directory;
@@ -19,17 +23,30 @@ public class DirInfo {
 		}
 		final Collection<File> files = FileUtils.listFiles(directory, Movie.FILE_EXTENSIONS, true);
 		for (File file : files) {
-			fileInfos.add(new FileInfo(file));
+			getFileInfos().add(new FileInfo(file));
 		}
 	}
 	
 	public boolean containsFile(final FileInfo fileInfo) {
-		for (FileInfo knownInfo : fileInfos) {
+		try {
+			LOG.debug("Checking file: " + fileInfo.getFile().getCanonicalPath());
+		} catch (IOException e) {
+			LOG.error("Checking file, but could not get its canonical path ;)");
+		}
+		for (FileInfo knownInfo : getFileInfos()) {
 			if (knownInfo.getChecksum() == fileInfo.getChecksum()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public Set<FileInfo> getFileInfos() {
+		return fileInfos;
+	}
+
+	public File getDirectory() {
+		return directory;
 	}
 
 }

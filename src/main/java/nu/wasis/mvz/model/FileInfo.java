@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.zip.Adler32;
 import java.util.zip.Checksum;
 
+import nu.wasis.mvz.exception.NotAFileException;
 import nu.wasis.mvz.util.FileUtils;
 
 public class FileInfo {
@@ -16,6 +17,9 @@ public class FileInfo {
 	public FileInfo(File file) {
 		super();
 		this.file = file;
+		if (!file.isFile()) {
+			throw new NotAFileException("Not a file: " + file.getPath());
+		}
 	}
 	
 	public File getFile() {
