@@ -65,6 +65,7 @@ public class Mvz {
 			}
 			
 		} catch (Exception e) {
+			printHelp();
 			LOG.error("Error:", e);
 		}
 		
