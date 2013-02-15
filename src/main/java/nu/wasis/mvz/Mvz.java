@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.SortedSet;
 
 import nu.wasis.mvz.cli.MvzOptions;
-import nu.wasis.mvz.model.DirInfo;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,11 +28,11 @@ public class Mvz {
 				return;
 			}
 			
-			final DirInfo sourceDir = new DirInfo(new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE)));
-			final DirInfo targetDir = new DirInfo(new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET)));
+			final File sourceDir = new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE));
+			final File targetDir = new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET));
 			
-			LOG.info("Source: " + sourceDir.getDirectory());
-			LOG.info("Target: " + targetDir.getDirectory());
+			LOG.info("Source: " + sourceDir.getCanonicalPath());
+			LOG.info("Target: " + targetDir.getCanonicalPath());
 			
 			LOG.info("plz wait...");
 			final SortedSet<String> copyPathNames = new MvzApplication().getCopyRecommendations(sourceDir, targetDir);

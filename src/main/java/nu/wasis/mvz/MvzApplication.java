@@ -7,13 +7,25 @@ import java.util.TreeSet;
 
 import nu.wasis.mvz.model.DirInfo;
 import nu.wasis.mvz.model.FileInfo;
+import nu.wasis.mvz.util.DirInfoCacher;
 
 public class MvzApplication {
 
-	public MvzApplication() {
+	final DirInfoCacher dirInfoCacher = new DirInfoCacher();
+	
+	public SortedSet<String> getCopyRecommendations(final File sourceDir, final File targetDir) throws IOException {
+		final DirInfo sourceDirInfo = new DirInfo(sourceDir);
+		DirInfo targetDirInfo = dirInfoCacher.loadDirInfo(targetDir);
+		if (null == targetDirInfo) {
+			targetDirInfo = new DirInfo(targetDir);
+		}
+		final SortedSet<String> copyRecommendations = getCopyRecommendations(sourceDirInfo, targetDirInfo);
+		// targetDirInfo should now contain all info for future runs
+		dirInfoCacher.saveDirInfo(targetDirInfo);
+		return copyRecommendations;
 	}
 	
-	public SortedSet<String> getCopyRecommendations(final DirInfo sourceDir, final DirInfo targetDir) throws IOException {
+	private SortedSet<String> getCopyRecommendations(final DirInfo sourceDir, final DirInfo targetDir) throws IOException {
 		final SortedSet<String> copyPathNames = new TreeSet<String>();
 		for (FileInfo fileInfo : sourceDir.getFileInfos()) {
 			if (!targetDir.containsFile(fileInfo)) {

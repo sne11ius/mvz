@@ -23,15 +23,18 @@ public class DirInfoCacher {
 	public DirInfo loadDirInfo(final File directory) {
 		final File cacheFile = getCacheFile(directory);
 		try {
+			LOG.debug("Loading cache from: " + cacheFile.getPath());
 			final ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(cacheFile));
 			final DirInfo dirInfo = (DirInfo) inputStream.readObject();
 			inputStream.close();
 			return dirInfo;
 		} catch (IOException e) {
 			// this is ok, we cannot be sure if the file exists
+			LOG.debug("... not found.");
 			return null;
 		} catch (ClassNotFoundException e) {
 			// this is ok, we cannot be sure if the file has correct content
+			LOG.debug("... not found.");
 			return null;
 		}
 	}
@@ -39,6 +42,7 @@ public class DirInfoCacher {
 	public void saveDirInfo(final DirInfo dirInfo) {
 		final File cacheFile = getCacheFile(dirInfo.getDirectory());
 		try {
+			LOG.debug("Saving cache to: " + cacheFile.getPath());
 			final ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(cacheFile));
 			outputStream.writeObject(dirInfo);
 			outputStream.close();
@@ -48,7 +52,7 @@ public class DirInfoCacher {
 	}
 	
 	private File getCacheFile(final File directory) {
-		return new File(directory.getPath() + File.pathSeparator + CACHE_FILE_NAME);
+		return new File(directory.getPath() + File.separator + CACHE_FILE_NAME);
 	}
 
 }
