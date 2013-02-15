@@ -17,7 +17,7 @@ public class MvzOptions extends Options {
 	private void addOptions() {
 		addOption(OPTION_SOURCE, true, "Source directory.");
 		addOption(OPTION_TARGET, true, "Target directory.");
-		addOption(OPTION_HELP, true, "[Optional] Print help and exit.");
+		addOption(OPTION_HELP, false, "[Optional] Print help and exit.");
 	}
 
 }
