@@ -2,6 +2,7 @@ package nu.wasis.mvz.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,8 +10,10 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
-public class DirInfo {
+public class DirInfo implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOG = Logger.getLogger(DirInfo.class);
 
 	private final File directory;

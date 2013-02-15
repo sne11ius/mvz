@@ -2,11 +2,9 @@ package nu.wasis.mvz;
 
 import java.io.File;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import nu.wasis.mvz.cli.MvzOptions;
 import nu.wasis.mvz.model.DirInfo;
-import nu.wasis.mvz.model.FileInfo;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -26,16 +24,8 @@ public class Mvz {
 		try {
 			CommandLineParser parser = new PosixParser();
 			CommandLine cmd = parser.parse(new MvzOptions(), args);
-			if (cmd.hasOption(MvzOptions.OPTION_HELP)) {
-				printHelp();
-				return;
-			}
-			if (!cmd.hasOption(MvzOptions.OPTION_SOURCE)) {
-				printHelp();
-				return;
-			}
-			if (!cmd.hasOption(MvzOptions.OPTION_TARGET)) {
-				printHelp();
+			
+			if (!checkCommands(cmd)) {
 				return;
 			}
 			
@@ -46,18 +36,7 @@ public class Mvz {
 			LOG.info("Target: " + targetDir.getDirectory());
 			
 			LOG.info("plz wait...");
-			final SortedSet<String> copyPathNames = new TreeSet<String>();
-			for (FileInfo fileInfo : sourceDir.getFileInfos()) {
-				if (!targetDir.containsFile(fileInfo)) {
-					final File sourceFile = fileInfo.getFile();
-					final File sourceFilePath = sourceFile.getParentFile();
-					if (sourceFilePath != sourceDir.getDirectory()) {
-						copyPathNames.add(sourceFilePath.getCanonicalPath());
-					} else {
-						copyPathNames.add(sourceFile.getCanonicalPath());
-					}
-				}
-			}
+			final SortedSet<String> copyPathNames = new MvzApplication().getCopyRecommendations(sourceDir, targetDir);
 			
 			LOG.info("Consider copying:");
 			for (String pathName : copyPathNames) {
@@ -68,7 +47,14 @@ public class Mvz {
 			printHelp();
 			LOG.error("Error:", e);
 		}
-		
+	}
+
+	private static boolean checkCommands(CommandLine cmd) {
+		if (cmd.hasOption(MvzOptions.OPTION_HELP) || !cmd.hasOption(MvzOptions.OPTION_SOURCE) || !cmd.hasOption(MvzOptions.OPTION_TARGET)) {
+			printHelp();
+			return false;
+		}
+		return true;
 	}
 
 	private static void printHelp() {
