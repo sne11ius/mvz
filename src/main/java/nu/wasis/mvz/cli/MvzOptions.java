@@ -8,6 +8,7 @@ public class MvzOptions extends Options {
 
 	public static final String OPTION_SOURCE = "s";
 	public static final String OPTION_TARGET = "t";
+	public static final String OPTION_IGNORE_CACHE = "i";
 	public static final String OPTION_HELP = "h";
 	
 	public MvzOptions() {
@@ -17,6 +18,7 @@ public class MvzOptions extends Options {
 	private void addOptions() {
 		addOption(OPTION_SOURCE, true, "Source directory.");
 		addOption(OPTION_TARGET, true, "Target directory.");
+		addOption(OPTION_IGNORE_CACHE, false, "Ignore cache file in target directory.");
 		addOption(OPTION_HELP, false, "[Optional] Print help and exit.");
 	}
 

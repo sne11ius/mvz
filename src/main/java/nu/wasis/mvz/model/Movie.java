@@ -1,7 +1,10 @@
 package nu.wasis.mvz.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Movie {
 
-	public static final String[] FILE_EXTENSIONS = {"avi", "mkv", "mpg", "mpeg", "mov"};
+	public static final List<String> FILE_EXTENSIONS = Arrays.asList(new String[] {"avi", "mkv", "mpg", "mpeg", "mov"});
 	
 }

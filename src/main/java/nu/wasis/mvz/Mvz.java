@@ -1,7 +1,7 @@
 package nu.wasis.mvz;
 
 import java.io.File;
-import java.util.SortedSet;
+import java.util.List;
 
 import nu.wasis.mvz.cli.MvzOptions;
 
@@ -31,11 +31,12 @@ public class Mvz {
 			final File sourceDir = new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE));
 			final File targetDir = new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET));
 			
-			LOG.info("Source: " + sourceDir.getCanonicalPath());
-			LOG.info("Target: " + targetDir.getCanonicalPath());
+			LOG.info("Source: " + sourceDir.getAbsolutePath());
+			LOG.info("Target: " + targetDir.getAbsolutePath());
 			
 			LOG.info("plz wait...");
-			final SortedSet<String> copyPathNames = new MvzApplication().getCopyRecommendations(sourceDir, targetDir);
+			boolean ignoreCache = cmd.hasOption(MvzOptions.OPTION_IGNORE_CACHE);
+			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, ignoreCache);
 			
 			LOG.info("Consider copying:");
 			for (String pathName : copyPathNames) {

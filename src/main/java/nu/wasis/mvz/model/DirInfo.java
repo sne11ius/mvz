@@ -24,7 +24,7 @@ public class DirInfo implements Serializable {
 		if (!directory.isDirectory()) {
 			throw new IllegalArgumentException("Not a directory: " + directory.getPath());
 		}
-		final Collection<File> files = FileUtils.listFiles(directory, Movie.FILE_EXTENSIONS, true);
+		final Collection<File> files = FileUtils.listFiles(directory, (String[]) Movie.FILE_EXTENSIONS.toArray(), true);
 		for (File file : files) {
 			getFileInfos().add(new FileInfo(file));
 		}

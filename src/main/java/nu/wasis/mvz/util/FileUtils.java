@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import nu.wasis.mvz.exception.FileToSmallException;
 
 public final class FileUtils {
 
+	private static final Logger LOG = Logger.getLogger(FileUtils.class);
+	
 	public static final int DEFAULT_READ_LENGTH = SizeConstants.KB_128;
 
 	private FileUtils() {
@@ -33,6 +37,7 @@ public final class FileUtils {
 				final int currentValue = input.read();
 				if (-1 == currentValue) {
 					input.close();
+					LOG.warn("File to small: " + file.getPath());
 					throw new FileToSmallException("File is to small to generate checksum: " + file.getPath());
 				}
 				bytes[bytesRead++] = (byte) currentValue;
