@@ -20,3 +20,7 @@ outcome
     INFO [main] (Mvz.java:43) - 	/xmpl/series/IT Crowd
     INFO [main] (Mvz.java:43) - 	/xmpl/series/Mongrels
     INFO [main] (Mvz.java:43) - 	/xmpl/series/Sherlock Holmes
+
+gui
+===
+![screenshot](https://raw.github.com/sne11ius/mvz/master/screenshot01.png)
