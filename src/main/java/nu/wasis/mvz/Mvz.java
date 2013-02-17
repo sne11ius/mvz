@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import nu.wasis.mvz.cli.MvzOptions;
+import nu.wasis.mvz.gui.MainWindow;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -21,6 +22,11 @@ public class Mvz {
 
 	public static void main(String[] args) {
 		try {
+			if (0 == args.length) {
+				MainWindow mainWindow = new MainWindow();
+				mainWindow.open();
+				return;
+			}
 			CommandLineParser parser = new PosixParser();
 			CommandLine cmd = parser.parse(new MvzOptions(), args);
 			
@@ -36,7 +42,7 @@ public class Mvz {
 			
 			LOG.info("plz wait...");
 			boolean ignoreCache = cmd.hasOption(MvzOptions.OPTION_IGNORE_CACHE);
-			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, ignoreCache);
+			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, ignoreCache, null);
 			
 			LOG.info("Consider copying:");
 			for (String pathName : copyPathNames) {
