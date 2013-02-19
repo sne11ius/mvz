@@ -27,8 +27,11 @@ outcome
 gui
 ===
 copy recommendation:
+
 ![screenshot 1](https://raw.github.com/sne11ius/mvz/master/screenshot01.png)
+
 copying:
+
 ![screenshot 2](https://raw.github.com/sne11ius/mvz/master/screenshot02.png)
 
 build
