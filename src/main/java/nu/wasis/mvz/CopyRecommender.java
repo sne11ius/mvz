@@ -14,6 +14,7 @@ import nu.wasis.mvz.model.Movie;
 import nu.wasis.mvz.util.DirInfoCacher;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.ProgressListener;
 import org.apache.log4j.Logger;
 
 public class CopyRecommender {
@@ -43,18 +44,18 @@ public class CopyRecommender {
 				copyPathNames.add(fileInfo.getFile());
 			}
 			if (null != progressListener) {
-				progressListener.onProgess(current++, totalFiles);
+				progressListener.onProgress(current++, totalFiles);
 			}
 		}
-		return reducePaths(copyPathNames);
+		return reducePaths(copyPathNames, sourceDir);
 	}
 
-	private List<String> reducePaths(final LinkedList<File> files) throws IOException {
+	private List<String> reducePaths(final LinkedList<File> files, final DirInfo sourceDir) throws IOException {
 		boolean didReduce = false;
 		
 		do {
 			for (File file : files) {
-				didReduce = reduceSingleDir(file, files);
+				didReduce = reduceSingleDir(file, files, sourceDir);
 				if (didReduce) {
 					LOG.debug("Reduce found, trying again ;)");
 					break;
@@ -65,8 +66,12 @@ public class CopyRecommender {
 		return toPathStrings(files);
 	}
 	
-	private boolean reduceSingleDir(final File dirCandidate, final LinkedList<File> allFiles) throws IOException {
+	private boolean reduceSingleDir(final File dirCandidate, final LinkedList<File> allFiles, final DirInfo sourceDir) throws IOException {
 		final File parent = dirCandidate.getParentFile();
+		// we do not want to optimize up to source dir:
+		if (parent.equals(sourceDir.getDirectory())) {
+			return false;
+		}
 		for (File file : parent.listFiles()) {
 			if (file.isFile()) {
 				final String extension = FilenameUtils.getExtension(file.getCanonicalPath());

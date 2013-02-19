@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
 import nu.wasis.mvz.exception.FileToSmallException;
+
+import org.apache.log4j.Logger;
 
 public final class FileUtils {
 

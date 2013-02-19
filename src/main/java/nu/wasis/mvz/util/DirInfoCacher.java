@@ -51,8 +51,12 @@ public class DirInfoCacher {
 		}
 	}
 	
+	public void removeCacheFile(final File directory) {
+		getCacheFile(directory).delete();
+	}
+	
 	private File getCacheFile(final File directory) {
 		return new File(directory.getPath() + File.separator + CACHE_FILE_NAME);
 	}
-
+	
 }
