@@ -45,6 +45,8 @@ public class MainWindow {
 	
 	private String currentString = DEFAULT_CURRENT;
 	private String totalString = DEFAULT_TOTAL;
+
+	private Tree tree;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -67,7 +69,7 @@ public class MainWindow {
 		shell.setText("mvz");
 		shell.setLayout(new GridLayout(2, false));
 		
-		final Tree tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
+		tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
 		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		
 		txtSource = new Text(shell, SWT.BORDER);
@@ -186,10 +188,7 @@ public class MainWindow {
 							LOG.debug("Done.");
 							enableAll();
 						} catch (IOException e) {
-							final MessageBox messageBox = new MessageBox(shell);
-							messageBox.setMessage("Error");
-							messageBox.setText(e.getLocalizedMessage());
-							messageBox.open();
+							showError(e);
 						}
 					}
 				});
@@ -247,11 +246,8 @@ public class MainWindow {
 					if (null != doAfter) {
 						doAfter.run();
 					}
-				} catch (final IOException e1) {
-					final MessageBox messageBox = new MessageBox(shell);
-					messageBox.setMessage("Error");
-					messageBox.setText(e1.getLocalizedMessage());
-					messageBox.open();
+				} catch (final Exception e) {
+					showError(e);
 				} finally {
 					enableAll();
 				}
@@ -259,4 +255,13 @@ public class MainWindow {
 		});
 	}
 
+	private void showError(final Exception e) {
+		LOG.error(e);
+		tree.removeAll();
+		final MessageBox messageBox = new MessageBox(shell);
+		messageBox.setMessage(e.getMessage());
+		messageBox.setText("Error");
+		messageBox.open();
+	}
+	
 }
