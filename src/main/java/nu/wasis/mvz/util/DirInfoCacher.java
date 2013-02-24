@@ -27,6 +27,7 @@ public class DirInfoCacher {
 			final ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(cacheFile));
 			final DirInfo dirInfo = (DirInfo) inputStream.readObject();
 			inputStream.close();
+			LOG.debug("... found.");
 			return dirInfo;
 		} catch (IOException e) {
 			// this is ok, we cannot be sure if the file exists

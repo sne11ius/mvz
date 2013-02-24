@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -47,6 +48,11 @@ public class MainWindow {
 	private String totalString = DEFAULT_TOTAL;
 
 	private Tree tree;
+	private Text txtCacheLoc;
+
+	private Button btnCacheLoc;
+
+	private Button btnAlternativeCacheLocation;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -65,7 +71,7 @@ public class MainWindow {
 	protected void createContents() {
 		shell = new Shell();
 		shell.setMinimumSize(new Point(400, 300));
-		shell.setSize(404, 300);
+		shell.setSize(404, 413);
 		shell.setText("mvz");
 		shell.setLayout(new GridLayout(2, false));
 		
@@ -179,8 +185,8 @@ public class MainWindow {
 								}
 							});
 							LOG.debug("Copy finished, cleaning up.");
-							final File targetDir = new File(txtTarget.getText());
-							new DirInfoCacher().removeCacheFile(targetDir);
+							final File cacheLocation = null == getCacheLocation() ? new File(txtTarget.getText()) : getCacheLocation();
+							new DirInfoCacher().removeCacheFile(cacheLocation);
 							doAnalyze(tree, progressAnalyze, btnAnalyze, null);
 							currentString = DEFAULT_CURRENT;
 							totalString = DEFAULT_TOTAL;
@@ -195,6 +201,47 @@ public class MainWindow {
 			}
 		});
 		btnCopy.setText("Copy Stuff");
+		
+		Group grpAvanced = new Group(shell, SWT.NONE);
+		GridLayout gl_grpAvanced = new GridLayout(2, false);
+		gl_grpAvanced.marginBottom = 5;
+		grpAvanced.setLayout(gl_grpAvanced);
+		GridData gd_grpAvanced = new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1);
+		gd_grpAvanced.heightHint = 63;
+		gd_grpAvanced.widthHint = 132;
+		grpAvanced.setLayoutData(gd_grpAvanced);
+		grpAvanced.setText("Avanced");
+		
+		btnAlternativeCacheLocation = new Button(grpAvanced, SWT.CHECK);
+		btnAlternativeCacheLocation.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				final boolean enabled = btnAlternativeCacheLocation.getSelection();
+				txtCacheLoc.setEnabled(enabled);
+				btnCacheLoc.setEnabled(enabled);
+			}
+		});
+		btnAlternativeCacheLocation.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+		btnAlternativeCacheLocation.setText("Alternative cache location");
+		
+		txtCacheLoc = new Text(grpAvanced, SWT.BORDER);
+		txtCacheLoc.setEnabled(false);
+		txtCacheLoc.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+		txtCacheLoc.setText(FileUtils.getUserDirectoryPath());
+		
+		btnCacheLoc = new Button(grpAvanced, SWT.NONE);
+		btnCacheLoc.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				selectDirectory("Choose cache directory", txtCacheLoc);
+			}
+		});
+		btnCacheLoc.setEnabled(false);
+		GridData gd_btnCacheLoc = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+		gd_btnCacheLoc.widthHint = 90;
+		btnCacheLoc.setLayoutData(gd_btnCacheLoc);
+		btnCacheLoc.setText("Cache loc");
+		
 	}
 	
 	private void disableAll() {
@@ -230,7 +277,7 @@ public class MainWindow {
 						final CopyRecommender copyRecommender = new CopyRecommender();
 						final File sourceDir = new File(txtSource.getText());
 						final File targetDir = new File(txtTarget.getText());
-						final List<String> directorys = copyRecommender.getCopyRecommendations(sourceDir, targetDir, null, false, new ProgressListener() {
+						final List<String> directorys = copyRecommender.getCopyRecommendations(sourceDir, targetDir, getCacheLocation(), false, new ProgressListener() {
 							@Override
 							public void onProgress(final long current, final long total) {
 								progressAnalyze.setMaximum((int) total);
@@ -252,7 +299,12 @@ public class MainWindow {
 					enableAll();
 				}
 			}
+
 		});
+	}
+
+	private File getCacheLocation() {
+		return btnAlternativeCacheLocation.getEnabled() ? new File(txtCacheLoc.getText()) : null;
 	}
 
 	private void showError(final Exception e) {
@@ -263,5 +315,4 @@ public class MainWindow {
 		messageBox.setText("Error");
 		messageBox.open();
 	}
-	
 }
