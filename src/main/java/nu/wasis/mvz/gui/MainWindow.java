@@ -230,7 +230,7 @@ public class MainWindow {
 						final CopyRecommender copyRecommender = new CopyRecommender();
 						final File sourceDir = new File(txtSource.getText());
 						final File targetDir = new File(txtTarget.getText());
-						final List<String> directorys = copyRecommender.getCopyRecommendations(sourceDir, targetDir, false, new ProgressListener() {
+						final List<String> directorys = copyRecommender.getCopyRecommendations(sourceDir, targetDir, null, false, new ProgressListener() {
 							@Override
 							public void onProgress(final long current, final long total) {
 								progressAnalyze.setMaximum((int) total);

@@ -39,8 +39,8 @@ public class DirInfoCacher {
 		}
 	}
 	
-	public void saveDirInfo(final DirInfo dirInfo) {
-		final File cacheFile = getCacheFile(dirInfo.getDirectory());
+	public void saveDirInfo(final DirInfo dirInfo, final File cachePath) {
+		final File cacheFile = getCacheFile(cachePath);
 		try {
 			LOG.debug("Saving cache to: " + cacheFile.getPath());
 			final ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(cacheFile));

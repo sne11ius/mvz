@@ -36,13 +36,17 @@ public class Mvz {
 			
 			final File sourceDir = new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE));
 			final File targetDir = new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET));
+			File cacheFile = null;
+			if (cmd.hasOption(MvzOptions.OPTION_CACHE_FILE)) {
+				cacheFile = new File(cmd.getOptionValue(MvzOptions.OPTION_CACHE_FILE));
+			}
 			
 			LOG.info("Source: " + sourceDir.getAbsolutePath());
 			LOG.info("Target: " + targetDir.getAbsolutePath());
 			
 			LOG.info("plz wait...");
 			boolean ignoreCache = cmd.hasOption(MvzOptions.OPTION_IGNORE_CACHE);
-			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, ignoreCache, null);
+			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, cacheFile, ignoreCache, null);
 			
 			LOG.info("Consider copying:");
 			for (String pathName : copyPathNames) {

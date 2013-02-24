@@ -23,18 +23,26 @@ public class CopyRecommender {
 
 	private final DirInfoCacher dirInfoCacher = new DirInfoCacher();
 	
-	public List<String> getCopyRecommendations(final File sourceDir, final File targetDir, final boolean ignoreCache, final ProgressListener progressListener) throws IOException {
+	public List<String> getCopyRecommendations(final File sourceDir, final File targetDir, final File cacheFile, final boolean ignoreCache, final ProgressListener progressListener) throws IOException {
 		final DirInfo sourceDirInfo = new DirInfo(sourceDir);
-		DirInfo targetDirInfo = dirInfoCacher.loadDirInfo(targetDir);
+		final File cachePath = getCachePath(targetDir, cacheFile);
+		DirInfo targetDirInfo = dirInfoCacher.loadDirInfo(cachePath);
 		if (null == targetDirInfo || ignoreCache) {
 			targetDirInfo = new DirInfo(targetDir);
 		}
 		final List<String> copyRecommendations = getCopyRecommendations(sourceDirInfo, targetDirInfo, progressListener);
 		// targetDirInfo now contains all info for future runs
-		dirInfoCacher.saveDirInfo(targetDirInfo);
+		dirInfoCacher.saveDirInfo(targetDirInfo, cachePath);
 		return copyRecommendations;
 	}
 	
+	private File getCachePath(final File targetDir, final File cacheFile) {
+		if (null == cacheFile) {
+			return targetDir;
+		}
+		return cacheFile.isDirectory() ? cacheFile : cacheFile.getParentFile();
+	}
+
 	private List<String> getCopyRecommendations(final DirInfo sourceDir, final DirInfo targetDir, final ProgressListener progressListener) throws IOException {
 		final LinkedList<File> copyPathNames = new LinkedList<File>();
 		final long totalFiles = sourceDir.getFileInfos().size();
