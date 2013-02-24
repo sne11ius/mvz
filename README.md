@@ -9,8 +9,8 @@ usage
 =====
 usage: mvz
 
-    -c <arg>   Cache file to use (defaults to cache file in target
-               directory).
+    -c <arg>   [Optional] Cache file to use (defaults to cache file in
+               target directory).
     -h         [Optional] Print help and exit.
     -i         Ignore cache file in target directory.
     -s <arg>   Source directory.
