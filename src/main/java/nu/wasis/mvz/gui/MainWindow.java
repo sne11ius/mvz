@@ -53,6 +53,8 @@ public class MainWindow {
 	private Button btnCacheLoc;
 
 	private Button btnAlternativeCacheLocation;
+
+	private Group grpAvanced;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -202,7 +204,7 @@ public class MainWindow {
 		});
 		btnCopy.setText("Copy Stuff");
 		
-		Group grpAvanced = new Group(shell, SWT.NONE);
+		grpAvanced = new Group(shell, SWT.NONE);
 		GridLayout gl_grpAvanced = new GridLayout(2, false);
 		gl_grpAvanced.marginBottom = 5;
 		grpAvanced.setLayout(gl_grpAvanced);
@@ -248,10 +250,16 @@ public class MainWindow {
 		for (Control control : this.shell.getChildren()) {
 			control.setEnabled(false);
 		}
+		for (Control control : grpAvanced.getChildren()) {
+			control.setEnabled(false);
+		}
 	}
 	
 	private void enableAll() {
 		for (Control control : this.shell.getChildren()) {
+			control.setEnabled(true);
+		}
+		for (Control control : grpAvanced.getChildren()) {
 			control.setEnabled(true);
 		}
 	}
