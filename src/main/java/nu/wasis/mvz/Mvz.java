@@ -14,61 +14,61 @@ import org.apache.log4j.Logger;
 
 public class Mvz {
 
-	private static final Logger LOG = Logger.getLogger(Mvz.class);
-	
-	private Mvz() {
-		// static only
-	}
+    private static final Logger LOG = Logger.getLogger(Mvz.class);
 
-	public static void main(String[] args) {
-		try {
-			if (0 == args.length) {
-				MainWindow mainWindow = new MainWindow();
-				mainWindow.open();
-				return;
-			}
-			CommandLineParser parser = new PosixParser();
-			CommandLine cmd = parser.parse(new MvzOptions(), args);
-			
-			if (!checkCommands(cmd)) {
-				return;
-			}
-			
-			final File sourceDir = new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE));
-			final File targetDir = new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET));
-			File cacheFile = null;
-			if (cmd.hasOption(MvzOptions.OPTION_CACHE_FILE)) {
-				cacheFile = new File(cmd.getOptionValue(MvzOptions.OPTION_CACHE_FILE));
-			}
-			
-			LOG.info("Source: " + sourceDir.getAbsolutePath());
-			LOG.info("Target: " + targetDir.getAbsolutePath());
-			
-			LOG.info("plz wait...");
-			boolean ignoreCache = cmd.hasOption(MvzOptions.OPTION_IGNORE_CACHE);
-			final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, cacheFile, ignoreCache, null);
-			
-			LOG.info("Consider copying:");
-			for (String pathName : copyPathNames) {
-				LOG.info("\t" + pathName);
-			}
-			
-		} catch (Exception e) {
-			printHelp();
-			LOG.error("Error:", e);
-		}
-	}
+    private Mvz() {
+        // static only
+    }
 
-	private static boolean checkCommands(CommandLine cmd) {
-		if (cmd.hasOption(MvzOptions.OPTION_HELP) || !cmd.hasOption(MvzOptions.OPTION_SOURCE) || !cmd.hasOption(MvzOptions.OPTION_TARGET)) {
-			printHelp();
-			return false;
-		}
-		return true;
-	}
+    public static void main(String[] args) {
+        try {
+            if (0 == args.length) {
+                MainWindow mainWindow = new MainWindow();
+                mainWindow.open();
+                return;
+            }
+            CommandLineParser parser = new PosixParser();
+            CommandLine cmd = parser.parse(new MvzOptions(), args);
 
-	private static void printHelp() {
-		new HelpFormatter().printHelp("mvz", new MvzOptions());
-	}
+            if (!checkCommands(cmd)) {
+                return;
+            }
+
+            final File sourceDir = new File(cmd.getOptionValue(MvzOptions.OPTION_SOURCE));
+            final File targetDir = new File(cmd.getOptionValue(MvzOptions.OPTION_TARGET));
+            File cacheFile = null;
+            if (cmd.hasOption(MvzOptions.OPTION_CACHE_FILE)) {
+                cacheFile = new File(cmd.getOptionValue(MvzOptions.OPTION_CACHE_FILE));
+            }
+
+            LOG.info("Source: " + sourceDir.getAbsolutePath());
+            LOG.info("Target: " + targetDir.getAbsolutePath());
+
+            LOG.info("plz wait...");
+            boolean ignoreCache = cmd.hasOption(MvzOptions.OPTION_IGNORE_CACHE);
+            final List<String> copyPathNames = new CopyRecommender().getCopyRecommendations(sourceDir, targetDir, cacheFile, ignoreCache, null);
+
+            LOG.info("Consider copying:");
+            for (String pathName : copyPathNames) {
+                LOG.info("\t" + pathName);
+            }
+
+        } catch (Exception e) {
+            printHelp();
+            LOG.error("Error:", e);
+        }
+    }
+
+    private static boolean checkCommands(CommandLine cmd) {
+        if (cmd.hasOption(MvzOptions.OPTION_HELP) || !cmd.hasOption(MvzOptions.OPTION_SOURCE) || !cmd.hasOption(MvzOptions.OPTION_TARGET)) {
+            printHelp();
+            return false;
+        }
+        return true;
+    }
+
+    private static void printHelp() {
+        new HelpFormatter().printHelp("mvz", new MvzOptions());
+    }
 
 }

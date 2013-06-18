@@ -18,115 +18,116 @@ import org.apache.commons.io.ProgressListener;
 import org.apache.log4j.Logger;
 
 public class CopyRecommender {
-	
-	private static final Logger LOG = Logger.getLogger(CopyRecommender.class);
 
-	private final DirInfoCacher dirInfoCacher = new DirInfoCacher();
-	
-	public List<String> getCopyRecommendations(final File sourceDir, final File targetDir, final File cacheFile, final boolean ignoreCache, final ProgressListener progressListener) throws IOException {
-		final DirInfo sourceDirInfo = new DirInfo(sourceDir);
-		final File cachePath = getCachePath(targetDir, cacheFile);
-		DirInfo targetDirInfo = dirInfoCacher.loadDirInfo(cachePath);
-		if (null == targetDirInfo || ignoreCache) {
-			targetDirInfo = new DirInfo(targetDir);
-		}
-		final List<String> copyRecommendations = getCopyRecommendations(sourceDirInfo, targetDirInfo, progressListener);
-		// targetDirInfo now contains all info for future runs
-		dirInfoCacher.saveDirInfo(targetDirInfo, cachePath);
-		return copyRecommendations;
-	}
-	
-	private File getCachePath(final File targetDir, final File cacheFile) {
-		if (null == cacheFile) {
-			return targetDir;
-		}
-		return cacheFile.isDirectory() ? cacheFile : cacheFile.getParentFile();
-	}
+    private static final Logger LOG = Logger.getLogger(CopyRecommender.class);
 
-	private List<String> getCopyRecommendations(final DirInfo sourceDir, final DirInfo targetDir, final ProgressListener progressListener) throws IOException {
-		final LinkedList<File> copyPathNames = new LinkedList<File>();
-		final long totalFiles = sourceDir.getFileInfos().size();
-		long current = 1;
-		for (FileInfo fileInfo : sourceDir.getFileInfos()) {
-			if (!targetDir.containsFile(fileInfo)) {
-				copyPathNames.add(fileInfo.getFile());
-			}
-			if (null != progressListener) {
-				progressListener.onProgress(current++, totalFiles);
-			}
-		}
-		return reducePaths(copyPathNames, sourceDir);
-	}
+    private final DirInfoCacher dirInfoCacher = new DirInfoCacher();
 
-	private List<String> reducePaths(final LinkedList<File> files, final DirInfo sourceDir) throws IOException {
-		boolean didReduce = false;
-		
-		do {
-			for (File file : files) {
-				didReduce = reduceSingleDir(file, files, sourceDir);
-				if (didReduce) {
-					LOG.debug("Reduce found, trying again ;)");
-					break;
-				}
-			}
-		} while (didReduce);
-		
-		return toPathStrings(files);
-	}
-	
-	private boolean reduceSingleDir(final File dirCandidate, final LinkedList<File> allFiles, final DirInfo sourceDir) throws IOException {
-		final File parent = dirCandidate.getParentFile();
-		// we do not want to optimize up to source dir:
-		if (parent.equals(sourceDir.getDirectory())) {
-			return false;
-		}
-		for (File file : parent.listFiles()) {
-			if (file.isFile()) {
-				final String extension = FilenameUtils.getExtension(file.getCanonicalPath());
-				if (!Movie.FILE_EXTENSIONS.contains(extension) || "".equals(extension)) {
-					LOG.debug("Skipping file because it's extension (" + extension + ") is ignored: " + file);
-					continue;
-				}
-			}
-			if (!allFiles.contains(file)) {
-				if (file.isDirectory() && 0 == file.listFiles().length) {
-					// empty dir wtf?
-					LOG.debug("Ignoring empty directory: " + file.getCanonicalPath());
-				} else {
-					// This is not the parent you are looking for...
-					LOG.debug("Stopping since this file is new: " + file);
-					return false;
-				}
-			}
-		}
-		// ok, replace files with top dir
-		LOG.debug("Reduce found. Top directory: " + parent.getCanonicalPath());
-		replaceFilesWithParent(allFiles, parent);
-		return true;
-	}
+    public List<String> getCopyRecommendations(final File sourceDir, final File targetDir, final File cacheFile, final boolean ignoreCache,
+                                               final ProgressListener progressListener) throws IOException {
+        final DirInfo sourceDirInfo = new DirInfo(sourceDir);
+        final File cachePath = getCachePath(targetDir, cacheFile);
+        DirInfo targetDirInfo = dirInfoCacher.loadDirInfo(cachePath);
+        if (null == targetDirInfo || ignoreCache) {
+            targetDirInfo = new DirInfo(targetDir);
+        }
+        final List<String> copyRecommendations = getCopyRecommendations(sourceDirInfo, targetDirInfo, progressListener);
+        // targetDirInfo now contains all info for future runs
+        dirInfoCacher.saveDirInfo(targetDirInfo, cachePath);
+        return copyRecommendations;
+    }
 
-	private void replaceFilesWithParent(final LinkedList<File> allFiles, final File parent) throws IOException {
-		final Set<File> removableFiles = new HashSet<File>();
-		for (File file : allFiles) {
-			final String filePath = file.getCanonicalPath();
-			final String parentPath = parent.getCanonicalPath();
-			if (filePath.startsWith(parentPath)) {
-				LOG.debug("Removing:                        " + filePath);
-				LOG.debug("Because it starts with:          " + parentPath);
-				removableFiles.add(file);
-			}
-		}
-		allFiles.removeAll(removableFiles);
-		allFiles.addLast(parent);
-	}
-	
-	private List<String> toPathStrings(final LinkedList<File> files) throws IOException {
-		final List<String> pathStrings = new LinkedList<String>();
-		for (File file : files) {
-			pathStrings.add(file.getAbsolutePath());
-		}
-		Collections.sort(pathStrings);
-		return pathStrings;
-	}
-	
+    private File getCachePath(final File targetDir, final File cacheFile) {
+        if (null == cacheFile) {
+            return targetDir;
+        }
+        return cacheFile.isDirectory() ? cacheFile : cacheFile.getParentFile();
+    }
+
+    private List<String> getCopyRecommendations(final DirInfo sourceDir, final DirInfo targetDir, final ProgressListener progressListener) throws IOException {
+        final LinkedList<File> copyPathNames = new LinkedList<File>();
+        final long totalFiles = sourceDir.getFileInfos().size();
+        long current = 1;
+        for (FileInfo fileInfo : sourceDir.getFileInfos()) {
+            if (!targetDir.containsFile(fileInfo)) {
+                copyPathNames.add(fileInfo.getFile());
+            }
+            if (null != progressListener) {
+                progressListener.onProgress(current++, totalFiles);
+            }
+        }
+        return reducePaths(copyPathNames, sourceDir);
+    }
+
+    private List<String> reducePaths(final LinkedList<File> files, final DirInfo sourceDir) throws IOException {
+        boolean didReduce = false;
+
+        do {
+            for (File file : files) {
+                didReduce = reduceSingleDir(file, files, sourceDir);
+                if (didReduce) {
+                    LOG.debug("Reduce found, trying again ;)");
+                    break;
+                }
+            }
+        } while (didReduce);
+
+        return toPathStrings(files);
+    }
+
+    private boolean reduceSingleDir(final File dirCandidate, final LinkedList<File> allFiles, final DirInfo sourceDir) throws IOException {
+        final File parent = dirCandidate.getParentFile();
+        // we do not want to optimize up to source dir:
+        if (parent.equals(sourceDir.getDirectory())) {
+            return false;
+        }
+        for (File file : parent.listFiles()) {
+            if (file.isFile()) {
+                final String extension = FilenameUtils.getExtension(file.getCanonicalPath());
+                if (!Movie.FILE_EXTENSIONS.contains(extension) || "".equals(extension)) {
+                    LOG.debug("Skipping file because it's extension (" + extension + ") is ignored: " + file);
+                    continue;
+                }
+            }
+            if (!allFiles.contains(file)) {
+                if (file.isDirectory() && 0 == file.listFiles().length) {
+                    // empty dir wtf?
+                    LOG.debug("Ignoring empty directory: " + file.getCanonicalPath());
+                } else {
+                    // This is not the parent you are looking for...
+                    LOG.debug("Stopping since this file is new: " + file);
+                    return false;
+                }
+            }
+        }
+        // ok, replace files with top dir
+        LOG.debug("Reduce found. Top directory: " + parent.getCanonicalPath());
+        replaceFilesWithParent(allFiles, parent);
+        return true;
+    }
+
+    private void replaceFilesWithParent(final LinkedList<File> allFiles, final File parent) throws IOException {
+        final Set<File> removableFiles = new HashSet<File>();
+        for (File file : allFiles) {
+            final String filePath = file.getCanonicalPath();
+            final String parentPath = parent.getCanonicalPath();
+            if (filePath.startsWith(parentPath)) {
+                LOG.debug("Removing:                        " + filePath);
+                LOG.debug("Because it starts with:          " + parentPath);
+                removableFiles.add(file);
+            }
+        }
+        allFiles.removeAll(removableFiles);
+        allFiles.addLast(parent);
+    }
+
+    private List<String> toPathStrings(final LinkedList<File> files) throws IOException {
+        final List<String> pathStrings = new LinkedList<String>();
+        for (File file : files) {
+            pathStrings.add(file.getAbsolutePath());
+        }
+        Collections.sort(pathStrings);
+        return pathStrings;
+    }
+
 }
